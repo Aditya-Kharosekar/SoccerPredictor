@@ -10,21 +10,23 @@ def printTeamOptions():
     wb = load_workbook("Soccer Points Database.xlsx", data_only=True)
     sheet = wb["Sheet1"]
 
-    for num in range(0, 20):        #putting all 20 team names into the list teams[]
-        cell_num = "A"+str((num+1))
+    for num in range(1, 21):        #putting all 20 team names into the list teams[]
+        cell_num = "A"+str((num))
         teams.append(sheet[cell_num].value)
 
     for num in range (0, 20):       #printing the home team options
         print(str(num+1) + ". " + teams[num])
     print("Enter index: ")
-    home = int(input())
+    home = int(input()) - 1     #I subtract 1 because the printed index of the team is actually one more than the team's index in teams[]
+                                #Example: Leicester City is shown as the 8th team but it has index 7
+    print("You have chosen " + teams[home])
     result.append(home)
     
     for num in range(0, 20):        #printing the away team options
        if (num!=home):
            print(str(num+1) + ". " + teams[num])
     print("Enter index: ")
-    away = int(input())
+    away = int(input()) - 1     #I subtract 1 for the same reason as above
     result.append(away)  
     return result                 
 
