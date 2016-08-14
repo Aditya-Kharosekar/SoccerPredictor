@@ -45,15 +45,29 @@ def getTeamRatings(teamchoices):
     homeRating = sheet[home_cell_num].value;
     awayRating = sheet[away_cell_num].value
     return [homeRating, awayRating]
-              
+
+# Takes in the list returned by getTeamRatings(), and returns win percentages of both teams in a list. First element - home team win%.
+# Second element - away team win%
+def getWinPercentages(teamratings):
+    homeRating = teamratings[0]
+    awayRating = teamratings[1]
+
+    x = 100/(homeRating + awayRating)
+    homeWinPercentage = homeRating * x;
+    awayWinPercentage = awayRating * x;
+
+    homeWinPercentage = homeWinPercentage + 2.5         #homefield advantage. This is a number I have chosen. (Next iteration: analyze and quantify each team's homefield advantage)
+    awayWinPercentage = awayWinPercentage - 2.5
+
+    return [homeWinPercentage, awayWinPercentage]
 
 def main():
     print("Enter index of home team: ")
     teamChoices = getTeamSelections()
     print(teamChoices)
     teamRatings = getTeamRatings(teamChoices);
-    print(teamRatings)
-
+    percentages = getWinPercentages(teamRatings)
+    print(percentages)
 
 if __name__ == '__main__':
     main()
