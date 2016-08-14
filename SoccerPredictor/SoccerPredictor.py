@@ -1,17 +1,10 @@
 from openpyxl import load_workbook
-import pandas as pd
  
 teams = []
 
-def processCSV(teamchoices):
-    df = pd.read_csv("2015-16.csv")
-    df1 = df.loc[df["HomeTeam"]==teamchoices[1]]
-    print(df1.head())
-
-
-#This function will print the appropriate team choices, and return a list. The first element will be the name of the home team.
-#The second element will be the name of the away team
-def printTeamOptions():
+#This function will print the appropriate team choices, and return a list. The first element will be the index of the home team.
+#The second element will be the index of the away team
+def getTeamSelections():
     indexResults = []
 
     wb = load_workbook("Soccer Points Database.xlsx", data_only=True)
@@ -37,14 +30,30 @@ def printTeamOptions():
     away = int(input()) - 1     #I subtract 1 for the same reason as above
     print("You have chosen " + teams[away] + " as the away team")
     indexResults.append(away)  
-    result = [teams[home], teams[away]]
-    return result                 
+    return indexResults    
+
+#Takes in list of index of home team and of away team. Reads excel database and returns a list. First element will be rating of home team.
+#Second element will be rating of away team
+def getTeamRatings(teamchoices):
+    homeTeamIndex = teamchoices[0]
+    awayTeamIndex = teamchoices[1]
+    wb = load_workbook("Soccer Points Database.xlsx", data_only=True)
+    sheet = wb["Sheet1"]
+
+    home_cell_num = "E" + str(homeTeamIndex+1)      # I add 1 to get the correct team's rating. The index in teamChoices[] is 1 less than the
+    away_cell_num = "E" + str(awayTeamIndex+1)      # row number in the excel sheet
+    homeRating = sheet[home_cell_num].value;
+    awayRating = sheet[away_cell_num].value
+    return [homeRating, awayRating]
+              
 
 def main():
     print("Enter index of home team: ")
-    teamChoices = printTeamOptions()
+    teamChoices = getTeamSelections()
     print(teamChoices)
-    processCSV(teamChoices)
+    teamRatings = getTeamRatings(teamChoices);
+    print(teamRatings)
+
 
 if __name__ == '__main__':
     main()
