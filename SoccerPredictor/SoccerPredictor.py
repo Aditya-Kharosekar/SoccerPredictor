@@ -57,18 +57,16 @@ def getHomeFieldAdvantage(teamchoices):
     df = pd.read_csv("2015-16.csv")
 
     home_df = df.loc[df["HomeTeam"]==homeTeam]
-    home_loss_df = home_df.loc[home_df["FTR"]=="A"]
     home_win_df = home_df.loc[home_df["FTR"]=="H"]
     home_draw_df = home_df.loc[home_df["FTR"]=="D"]
     home_pts_gained = (len(home_win_df.index)*3) + (len(home_draw_df.index)*1)
     home_pointsPerc = (home_pts_gained/57)*100 #(Points gained/Available points) *100
     
     away_df = df.loc[df["AwayTeam"] ==awayTeam]
-    away_loss_df = away_df.loc[away_df["FTR"]=="H"]     #An away loss means a home win
     away_win_df = away_df.loc[away_df["FTR"]=="A"]
     away_draw_df = away_df.loc[away_df["FTR"]=="D"]
     away_pts_gained = (len(away_win_df.index)*3) + (len(away_draw_df.index)*1)
-    away_pointsPerc = (away_pts_gained/56)*100
+    away_pointsPerc = (away_pts_gained/57)*100
 
     return [home_pointsPerc, away_pointsPerc]
 
@@ -97,7 +95,6 @@ def main():
     print("Soccer Matchup Analysis")
     print(str(teams[teamChoices[0]]) + " has a " + str(round(percentages[0], 2)) + "% chance of winning");
     print(str(teams[teamChoices[1]]) + " has a " + str(round(percentages[1], 2)) + "% chance of winning");
-    getHomeFieldAdvantage(teamChoices)
 
 if __name__ == '__main__':
     main()
