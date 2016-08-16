@@ -64,10 +64,11 @@ def getWinPercentages(teamratings):
 def main():
     print("Enter index of home team: ")
     teamChoices = getTeamSelections()
-    print(teamChoices)
     teamRatings = getTeamRatings(teamChoices);
     percentages = getWinPercentages(teamRatings)
-    print(percentages)
+    print("Soccer Matchup Analysis")
+    print(str(teams[teamChoices[0]]) + " has a " + str(round(percentages[0], 2)) + "% chance of winning");
+    print(str(teams[teamChoices[1]]) + " has a " + str(round(percentages[1], 2)) + "% chance of winning");
 
 if __name__ == '__main__':
     main()
