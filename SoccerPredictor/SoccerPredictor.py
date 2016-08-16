@@ -1,4 +1,5 @@
 from openpyxl import load_workbook
+import pandas as pd
  
 teams = []
 
@@ -46,18 +47,45 @@ def getTeamRatings(teamchoices):
     awayRating = sheet[away_cell_num].value
     return [homeRating, awayRating]
 
+# Quantifies how good the home team is at home games and how good the away team is at away games. Takes in indeces of chosen teams.
+# Returns a list. First element will be the % of available points(out of 57) that the home team has won at home.
+# Second element - % of available points(out of 57) that the away team has won on its travels.
+def getHomeFieldAdvantage(teamchoices):
+    homeTeam = teams[teamchoices[0]]
+    awayTeam = teams[teamchoices[1]]
+
+    df = pd.read_csv("2015-16.csv")
+
+    home_df = df.loc[df["HomeTeam"]==homeTeam]
+    home_loss_df = home_df.loc[home_df["FTR"]=="A"]
+    home_win_df = home_df.loc[home_df["FTR"]=="H"]
+    home_draw_df = home_df.loc[home_df["FTR"]=="D"]
+    home_pts_gained = (len(home_win_df.index)*3) + (len(home_draw_df.index)*1)
+    home_pointsPerc = (home_pts_gained/57)*100 #(Points gained/Available points) *100
+    
+    away_df = df.loc[df["AwayTeam"] ==awayTeam]
+    away_loss_df = away_df.loc[away_df["FTR"]=="H"]     #An away loss means a home win
+    away_win_df = away_df.loc[away_df["FTR"]=="A"]
+    away_draw_df = away_df.loc[away_df["FTR"]=="D"]
+    away_pts_gained = (len(away_win_df.index)*3) + (len(away_draw_df.index)*1)
+    away_pointsPerc = (away_pts_gained/56)*100
+
+    return [home_pointsPerc, away_pointsPerc]
+
 # Takes in the list returned by getTeamRatings(), and returns win percentages of both teams in a list. First element - home team win%.
 # Second element - away team win%
-def getWinPercentages(teamratings):
-    homeRating = teamratings[0]
-    awayRating = teamratings[1]
+def getWinPercentages(teamratings, teamchoices):
+    homeScore = teamratings[0]
+    awayScore = teamratings[1]
 
+    homeFieldAdvantage = getHomeFieldAdvantage(teamchoices)     #Basically tries to quantifies home field advantage
+
+    homeRating = (0.85*homeScore)+(0.15*homeFieldAdvantage[0])
+    awayRating = (0.85*awayScore)+(0.15*homeFieldAdvantage[1])
+    
     x = 100/(homeRating + awayRating)
     homeWinPercentage = homeRating * x;
     awayWinPercentage = awayRating * x;
-
-    homeWinPercentage = homeWinPercentage + 2.5         #homefield advantage. This is a number I have chosen. (Next iteration: analyze and quantify each team's homefield advantage)
-    awayWinPercentage = awayWinPercentage - 2.5
 
     return [homeWinPercentage, awayWinPercentage]
 
@@ -65,10 +93,11 @@ def main():
     print("Enter index of home team: ")
     teamChoices = getTeamSelections()
     teamRatings = getTeamRatings(teamChoices);
-    percentages = getWinPercentages(teamRatings)
+    percentages = getWinPercentages(teamRatings, teamChoices)
     print("Soccer Matchup Analysis")
     print(str(teams[teamChoices[0]]) + " has a " + str(round(percentages[0], 2)) + "% chance of winning");
     print(str(teams[teamChoices[1]]) + " has a " + str(round(percentages[1], 2)) + "% chance of winning");
+    getHomeFieldAdvantage(teamChoices)
 
 if __name__ == '__main__':
     main()
